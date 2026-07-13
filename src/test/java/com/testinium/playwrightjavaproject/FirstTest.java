@@ -1,8 +1,6 @@
 package com.testinium.playwrightjavaproject;
 
 import com.microsoft.playwright.*;
-import com.testinium.playwright.screenshot.ScreenshotConfig;
-import com.testinium.playwright.screenshot.ScreenshotSession;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
@@ -16,7 +14,6 @@ class FirstTest {
 
     private BrowserContext context;
     private Page page;
-    private ScreenshotSession screenshots;
     private Path tracePath;
 
     @BeforeAll
@@ -41,21 +38,11 @@ class FirstTest {
         // Page oluşturulmadan önce tracing başlatılmalı.
         context.tracing().start(
                 new Tracing.StartOptions()
-                        .setScreenshots(true)
                         .setSnapshots(true)
                         .setSources(true)
         );
 
         page = context.newPage();
-
-        screenshots = ScreenshotSession.builder(page, testName)
-                .config(
-                        ScreenshotConfig.builder()
-                                .outputDirectory(Path.of("screenshot"))
-                                .fullPage(true)
-                                .build()
-                )
-                .build();
     }
 
     @Test
@@ -166,7 +153,7 @@ class FirstTest {
         context.tracing().group(stepName);
 
         try {
-            screenshots.step(stepName, action);
+            action.run();
         } finally {
             context.tracing().groupEnd();
         }

@@ -15,6 +15,7 @@ class FirstTest {
     private BrowserContext context;
     private Page page;
     private Path tracePath;
+    private Page newTabPage;
 
     @BeforeAll
     static void launchBrowser() {
@@ -147,6 +148,78 @@ class FirstTest {
             Assertions.assertEquals("firefox", page.locator("#browser").inputValue());
             Assertions.assertTrue(page.locator("#headless").isChecked());
         });
+    }
+
+    @Test
+    public void shouldHandleJsConfirmDialog() {
+        step("JS Alerts sayfasını aç", () ->
+                page.navigate("https://the-internet.herokuapp.com/javascript_alerts"));
+
+        step("Confirm dialogunu tetikle ve kabul et", () -> {
+            page.onDialog(dialog -> dialog.accept());
+            page.locator("text=Click for JS Confirm").click();
+        });
+
+        step("Confirm sonucunu doğrula", () ->
+                Assertions.assertEquals("You clicked: Ok", page.locator("#result").textContent()));
+    }
+
+    @Test
+    public void shouldOpenContentInNewTab() {
+        step("Multiple Windows sayfasını aç", () ->
+                page.navigate("https://the-internet.herokuapp.com/windows"));
+
+        step("Yeni sekme açan linke tıkla", () -> {
+            newTabPage = context.waitForPage(() ->
+                    page.locator("text=Click Here").click());
+            newTabPage.waitForLoadState();
+        });
+
+        step("Yeni sekmenin içeriğini doğrula", () ->
+                Assertions.assertEquals("New Window", newTabPage.locator("h3").textContent()));
+    }
+
+    @Test
+    public void shouldTypeInsideEditorIframe() {
+        step("iFrame sayfasını aç", () ->
+                page.navigate("https://the-internet.herokuapp.com/iframe"));
+
+        step("Editör iframe içine yazı yaz", () ->
+                page.frameLocator("#mce_0_ifr").locator("#tinymce")
+                        .fill("Testinium Playwright suite"));
+
+        step("Yazının iframe içinde göründüğünü doğrula", () ->
+                Assertions.assertEquals(
+                        "Testinium Playwright suite",
+                        page.frameLocator("#mce_0_ifr").locator("#tinymce").textContent()));
+    }
+
+    @Test
+    public void shouldWaitForDynamicallyLoadedContent() {
+        step("Dynamic Loading sayfasını aç", () ->
+                page.navigate("https://the-internet.herokuapp.com/dynamic_loading/2"));
+
+        step("Yükleme sürecini başlat", () ->
+                page.locator("#start button").click());
+
+        step("Dinamik yüklenen metni doğrula", () -> {
+            page.locator("#finish h4").waitFor();
+            Assertions.assertEquals("Hello World!", page.locator("#finish h4").textContent());
+        });
+    }
+
+    @Test
+    public void shouldRevealProfileLinkOnHover() {
+        step("Hovers sayfasını aç", () ->
+                page.navigate("https://the-internet.herokuapp.com/hovers"));
+
+        step("İlk kullanıcı avatarının üzerine gel", () ->
+                page.locator(".figure").first().hover());
+
+        step("Profil linkinin göründüğünü doğrula", () ->
+                Assertions.assertEquals(
+                        "View profile",
+                        page.locator(".figure").first().locator("a").textContent()));
     }
 
     private void step(String stepName, Runnable action) {

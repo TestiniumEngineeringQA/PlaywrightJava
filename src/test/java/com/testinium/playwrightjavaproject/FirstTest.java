@@ -245,6 +245,16 @@ class FirstTest {
     }
 
     @Test
+    @Disabled("Geçici olarak kapalı / refactor bekliyor")
+    public void shouldOpenGoogleDisabled() {
+        step("Google sayfasını aç", () ->
+                page.navigate("https://www.google.com"));
+
+        step("Sayfa başlığını doğrula", () ->
+                Assertions.assertTrue(page.title().contains("Google")));
+    }
+
+    @Test
     public void RuntimeExcTest() {
         throw new RuntimeException();
     }

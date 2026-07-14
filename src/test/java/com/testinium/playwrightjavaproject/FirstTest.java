@@ -222,6 +222,33 @@ class FirstTest {
                         page.locator(".figure").first().locator("a").textContent()));
     }
 
+    @Test
+    public void shouldFailWithUnexpectedError() {
+        // Bilerek başarısız olan bir senaryo: var olmayan bir elemente kısa
+        // timeout ile tıklamayı deneyip Playwright'ın fırlattığı
+        // TimeoutError'ı yakalamadan yukarı taşıyoruz. Bu, hata raporlama,
+        // trace/screenshot alma ve CI pipeline'ının başarısız test akışını
+        // doğrulamak için kullanılabilir.
+        step("Hata senaryosu için sayfa aç", () ->
+                page.navigate("https://the-internet.herokuapp.com/"));
+
+        step("Var olmayan bir elemente tıklamayı dene", () ->
+                page.locator("#this-element-does-not-exist")
+                        .click(new Locator.ClickOptions().setTimeout(3000)));
+    }
+
+    @Test
+    // @Disabled("Sadece uzun süreli koşum davranışını test etmek istendiğinde açın")
+    public void shouldWaitTwentyMinutesWithoutAnyAction() {
+        step("20 dakika boyunca herhangi bir işlem yapmadan bekle", () ->
+                page.waitForTimeout(20 * 60 * 1000));
+    }
+
+    @Test
+    public void RuntimeExcTest() {
+        throw new RuntimeException();
+    }
+
     private void step(String stepName, Runnable action) {
         context.tracing().group(stepName);
 

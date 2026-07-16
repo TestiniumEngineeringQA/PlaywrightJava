@@ -348,7 +348,7 @@ class FirstTest {
                 Assertions.assertEquals(1, page.locator(".added-manually").count()));
 
         step("Eklenen elemanı sil", () ->
-                page.locator(".added-manually").click());
+                page.locator(".added-manually-ERROR").click());
 
         step("Elemanın listeden kaldırıldığını doğrula", () ->
                 Assertions.assertEquals(0, page.locator(".added-manually").count()));

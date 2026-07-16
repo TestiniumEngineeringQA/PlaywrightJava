@@ -25,6 +25,31 @@ class FirstTest {
                 new BrowserType.LaunchOptions()
                         .setHeadless(true)
         );
+
+        // 1. COMMAND_PARAMETER
+        String demoParam = System.getProperty("commandParameter");
+        // 2. ENVIRONMENT_PARAMETER
+        String denemeParam = System.getenv("environmentParameter");
+
+        // 1. COMMAND_PARAMETER
+        String demoParam2 = System.getProperty("commandParameter2");
+        // 2. ENVIRONMENT_PARAMETER
+        String denemeParam2 = System.getenv("environmentParameter2");
+
+        System.out.println(">>> [COMMAND_PARAMETER] demo: " + demoParam);
+        System.out.println(">>> [ENVIRONMENT_PARAMETER] deneme: " + denemeParam);
+
+        System.out.println(">>> [COMMAND_PARAMETER] demo2: " + demoParam2);
+        System.out.println(">>> [ENVIRONMENT_PARAMETER] deneme2: " + denemeParam2);
+
+        String scenarioIDValue = System.getenv("SCENARIO_ID");
+        String executionIDValue = System.getenv("EXECUTION_ID");
+        String testResultIDValue = System.getenv("TEST_RESULT_ID");
+
+        System.out.println(">>> [SCENARIO_ID] : " + scenarioIDValue);
+        System.out.println(">>> [EXECUTION_ID] : " + executionIDValue);
+        System.out.println(">>> [TEST_RESULT_ID] : " + testResultIDValue);
+
     }
 
     @BeforeEach

@@ -284,6 +284,76 @@ class FirstTest {
         throw new RuntimeException();
     }
 
+    @Test
+    public void shouldCompleteMultiStepUserJourney() {
+        // the-internet.herokuapp.com üzerinde birden fazla sayfayı gezen,
+        // bilerek çok sayıda küçük adıma bölünmüş uçtan uca bir senaryo.
+
+        step("Login sayfasını aç", () ->
+                page.navigate("https://the-internet.herokuapp.com/login"));
+
+        step("Login sayfası başlığını doğrula", () ->
+                Assertions.assertTrue(page.title().contains("The Internet")));
+
+        step("Kullanıcı adını gir", () ->
+                page.locator("#username").fill("tomsmith"));
+
+        step("Şifreyi gir", () ->
+                page.locator("#password").fill("SuperSecretPassword!"));
+
+        step("Giriş formunu gönder", () ->
+                page.locator("button[type='submit']").click());
+
+        step("Başarılı giriş mesajını doğrula", () ->
+                Assertions.assertTrue(
+                        page.locator("#flash").textContent().contains("You logged into a secure area")));
+
+        step("Checkboxes sayfasına git", () ->
+                page.navigate("https://the-internet.herokuapp.com/checkboxes"));
+
+        step("İlk checkbox'ın başlangıçta işaretsiz olduğunu doğrula", () ->
+                Assertions.assertFalse(page.locator("#checkboxes input[type='checkbox']").nth(0).isChecked()));
+
+        step("İlk checkbox'ı işaretle", () ->
+                page.locator("#checkboxes input[type='checkbox']").nth(0).check());
+
+        step("İlk checkbox'ın işaretlendiğini doğrula", () ->
+                Assertions.assertTrue(page.locator("#checkboxes input[type='checkbox']").nth(0).isChecked()));
+
+        step("İkinci checkbox'ın başlangıçta işaretli olduğunu doğrula", () ->
+                Assertions.assertTrue(page.locator("#checkboxes input[type='checkbox']").nth(1).isChecked()));
+
+        step("İkinci checkbox'ın işaretini kaldır", () ->
+                page.locator("#checkboxes input[type='checkbox']").nth(1).uncheck());
+
+        step("İkinci checkbox'ın işaretinin kaldırıldığını doğrula", () ->
+                Assertions.assertFalse(page.locator("#checkboxes input[type='checkbox']").nth(1).isChecked()));
+
+        step("Dropdown sayfasına git", () ->
+                page.navigate("https://the-internet.herokuapp.com/dropdown"));
+
+        step("Dropdown'dan Option 2'yi seç", () ->
+                page.locator("#dropdown").selectOption("2"));
+
+        step("Seçilen değerin doğru olduğunu doğrula", () ->
+                Assertions.assertEquals("2", page.locator("#dropdown").inputValue()));
+
+        step("Add/Remove Elements sayfasına git", () ->
+                page.navigate("https://the-internet.herokuapp.com/add_remove_elements/"));
+
+        step("Yeni bir eleman ekle", () ->
+                page.locator("text=Add Element").click());
+
+        step("Eklenen elemanın göründüğünü doğrula", () ->
+                Assertions.assertEquals(1, page.locator(".added-manually").count()));
+
+        step("Eklenen elemanı sil", () ->
+                page.locator(".added-manually").click());
+
+        step("Elemanın listeden kaldırıldığını doğrula", () ->
+                Assertions.assertEquals(0, page.locator(".added-manually").count()));
+    }
+
     private void step(String stepName, Runnable action) {
         context.tracing().group(stepName);
 
